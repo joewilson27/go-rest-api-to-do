@@ -2,21 +2,19 @@ package config
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/joewilson27/config/routes"
 )
 
 func SetupRoutes(app *fiber.App) {
 	// api
 	api := app.Group("/api")
 
-	api.Get("/checker-health", func(c *fiber.Ctx) error {
+	// checker health
+	checkerRoutes := api.Group("/checker-health")
+	routes.CheckerHealth(checkerRoutes)
 
-		// welcome content
-		resp := map[string]interface{}{
-			"status":  "OK",
-			"message": "Welcome to the Todo-List-API",
-		}
-
-		return c.Status(fiber.StatusOK).JSON(resp)
-	})
+	// task
+	taskRoutes := api.Group("/task")
+	routes.Task(taskRoutes)
 
 }
