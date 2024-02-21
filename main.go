@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -17,6 +18,11 @@ func main() {
 
 	// check and load ENV
 	config.LoadEnvir()
+
+	// Setup Database
+	config.SetupDatabase()
+
+	fmt.Println("running on port: " + os.Getenv("APP_PORT"))
 
 	// Run Apps on PORT
 	log.Fatal(app.Listen(":" + os.Getenv("APP_PORT")))
