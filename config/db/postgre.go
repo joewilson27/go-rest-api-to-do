@@ -30,7 +30,7 @@ func InitDB() error {
 	}
 
 	PG = database
-	fmt.Println("Success Connect to DB " + os.Getenv("PG_DB_NAME"))
+	fmt.Println("Success Connect to DB")
 
 	return nil
 }

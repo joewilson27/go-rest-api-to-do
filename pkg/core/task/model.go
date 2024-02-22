@@ -1,7 +1,6 @@
 package task
 
-type Task struct {
-	ID     uint   `gorm:"primaryKey;autoincrement" json:"id"`
+type TaskAdd struct {
 	Name   string `json:"name"`
 	Status string `json:"status"`
 }
