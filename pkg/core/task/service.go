@@ -2,7 +2,6 @@ package task
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/joewilson27/config/db"
 	"gorm.io/gorm"
 )
 
@@ -12,7 +11,7 @@ type Service struct {
 }
 
 // Add
-func (svc *Service) Add(data TaskAdd) error {
+func (svc *Service) Add(data TaskAdd) (Task, error) {
 
 	dataTask := Task{Name: data.Name, Status: data.Status}
 
@@ -22,16 +21,20 @@ func (svc *Service) Add(data TaskAdd) error {
 	}
 
 	err := repo.Create()
-	return err
+	return dataTask, err
 }
 
-func CreateTask(name, status string) (Task, error) {
-	var newTask = Task{Name: name, Status: status}
+func (svc *Service) GetTasks() ([]*Task, error) {
 
-	err := db.PG.Create(&Task{Name: name, Status: status})
-	if err != nil {
-		return newTask, err.Error
+	repo := repository{
+		DB: svc.DB,
 	}
 
-	return newTask, nil
+	result, err := repo.GetTasks()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, err
 }

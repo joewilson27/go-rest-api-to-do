@@ -7,15 +7,7 @@ import (
 
 func Task(taskRoutes fiber.Router) {
 
-	taskRoutes.Get("/", func(c *fiber.Ctx) error {
-		// welcome content
-		resp := map[string]interface{}{
-			"status":  "OK",
-			"message": "All tasks",
-		}
-
-		return c.Status(fiber.StatusOK).JSON(resp)
-	})
+	taskRoutes.Get("/", task.GetTasks)
 
 	taskRoutes.Get("/item/:id", func(c *fiber.Ctx) error {
 		// welcome content

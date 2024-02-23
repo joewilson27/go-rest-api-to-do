@@ -3,6 +3,7 @@ package task
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/joewilson27/common/model"
+	"github.com/joewilson27/common/response"
 	"github.com/joewilson27/config/db"
 )
 
@@ -21,49 +22,39 @@ func AddTask(c *fiber.Ctx) error {
 		DB: db.PG,
 	}
 
-	if errAdd := svc.Add(newTask); errAdd != nil {
+	resp, errAdd := svc.Add(newTask)
+	if errAdd != nil {
 		dataReturnError := model.AppResponse{
 			Data: nil,
-			Meta: model.Meta{Message: "Error add task. " + errAdd.Error()},
+			Meta: model.Meta{Message: response.DataAddedFailed + ": " + errAdd.Error()},
 		}
 		return c.Status(fiber.StatusBadRequest).JSON(dataReturnError)
 	}
 
 	return c.Status(fiber.StatusAccepted).JSON(model.AppResponse{
-		Data: nil,
-		Meta: model.Meta{Message: newTask.Name},
+		Data: resp,
+		Meta: model.Meta{Message: response.DataAddedSuccessfully},
 	})
 }
 
-func AddTaskNew(c *fiber.Ctx) error {
-	newTask := new(TaskAdd)
+func GetTasks(c *fiber.Ctx) error {
 
-	err := c.BodyParser(newTask)
-	if err != nil {
-		c.Status(400).JSON(&fiber.Map{
-			"data":    nil,
-			"success": false,
-			"message": err,
-		})
-		return err
+	svc := Service{
+		DB:  db.PG,
+		Ctx: c,
 	}
 
-	result, err := CreateTask(newTask.Name, newTask.Status)
-
+	result, err := svc.GetTasks()
 	if err != nil {
-		c.Status(400).JSON(&fiber.Map{
-			"data":    nil,
-			"success": false,
-			"message": err,
-		})
-		return err
+		dataReturnError := model.AppResponse{
+			Data: nil,
+			Meta: model.Meta{Message: response.GetDataFailed + " : " + err.Error()},
+		}
+		return c.Status(fiber.StatusBadRequest).JSON(dataReturnError)
 	}
 
-	c.Status(200).JSON(&fiber.Map{
-		"data":    result,
-		"success": true,
-		"message": "Task added!",
+	return c.Status(fiber.StatusOK).JSON(model.AppResponse{
+		Data: result,
+		Meta: model.Meta{Message: response.GetDataSuccessfully},
 	})
-
-	return nil
 }

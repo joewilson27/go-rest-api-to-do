@@ -13,3 +13,15 @@ func (repo *repository) Create() error {
 	err := repo.DB.Create(repo.Model)
 	return err.Error
 }
+
+func (repo *repository) GetTasks() ([]*Task, error) {
+	tasks := []*Task{}
+
+	err := repo.DB.Find(&tasks)
+
+	if err.Error != nil {
+		return nil, err.Error
+	}
+
+	return tasks, nil
+}
