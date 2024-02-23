@@ -14,16 +14,24 @@ type Service struct {
 // Add
 func (svc *Service) Add(data TaskAdd) error {
 
-	dataTask := Task{
-		Name:   data.Name,
-		Status: data.Status,
-	}
+	dataTask := Task{Name: data.Name, Status: data.Status}
 
 	repo := repository{
-		DB:    db.PG,
-		Model: dataTask,
+		DB:    svc.DB,
+		Model: &dataTask,
 	}
 
 	err := repo.Create()
 	return err
+}
+
+func CreateTask(name, status string) (Task, error) {
+	var newTask = Task{Name: name, Status: status}
+
+	err := db.PG.Create(&Task{Name: name, Status: status})
+	if err != nil {
+		return newTask, err.Error
+	}
+
+	return newTask, nil
 }

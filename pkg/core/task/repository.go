@@ -1,8 +1,6 @@
 package task
 
 import (
-	"fmt"
-
 	"gorm.io/gorm"
 )
 
@@ -12,8 +10,6 @@ type repository struct {
 }
 
 func (repo *repository) Create() error {
-	data := repo.Model
-	fmt.Println("print before ", data)
-	err := repo.DB.Create(&data)
+	err := repo.DB.Create(repo.Model)
 	return err.Error
 }

@@ -28,15 +28,6 @@ func Task(taskRoutes fiber.Router) {
 	})
 
 	taskRoutes.Post("/", task.AddTask)
-	// taskRoutes.Post("/add-task", func(c *fiber.Ctx) error {
-	// 	// welcome content
-	// 	resp := map[string]interface{}{
-	// 		"status":  "OK",
-	// 		"message": "Add task",
-	// 	}
-
-	// 	return c.Status(fiber.StatusOK).JSON(resp)
-	// })
 
 	taskRoutes.Delete("/delete-task/:id", func(c *fiber.Ctx) error {
 		// welcome content

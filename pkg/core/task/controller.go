@@ -34,3 +34,36 @@ func AddTask(c *fiber.Ctx) error {
 		Meta: model.Meta{Message: newTask.Name},
 	})
 }
+
+func AddTaskNew(c *fiber.Ctx) error {
+	newTask := new(TaskAdd)
+
+	err := c.BodyParser(newTask)
+	if err != nil {
+		c.Status(400).JSON(&fiber.Map{
+			"data":    nil,
+			"success": false,
+			"message": err,
+		})
+		return err
+	}
+
+	result, err := CreateTask(newTask.Name, newTask.Status)
+
+	if err != nil {
+		c.Status(400).JSON(&fiber.Map{
+			"data":    nil,
+			"success": false,
+			"message": err,
+		})
+		return err
+	}
+
+	c.Status(200).JSON(&fiber.Map{
+		"data":    result,
+		"success": true,
+		"message": "Task added!",
+	})
+
+	return nil
+}
