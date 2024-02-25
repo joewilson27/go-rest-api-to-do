@@ -25,3 +25,11 @@ func (repo *repository) GetTasks() ([]*Task, error) {
 
 	return tasks, nil
 }
+
+func (repo *repository) GetTaskById() (Task, error) {
+	var task Task
+
+	result := repo.DB.Where(repo.Model).Limit(1).Find(&task)
+
+	return task, result.Error
+}

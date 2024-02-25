@@ -9,15 +9,7 @@ func Task(taskRoutes fiber.Router) {
 
 	taskRoutes.Get("/", task.GetTasks)
 
-	taskRoutes.Get("/item/:id", func(c *fiber.Ctx) error {
-		// welcome content
-		resp := map[string]interface{}{
-			"status":  "OK",
-			"message": "Single task",
-		}
-
-		return c.Status(fiber.StatusOK).JSON(resp)
-	})
+	taskRoutes.Get("/item/:id", task.GetTaskById)
 
 	taskRoutes.Post("/", task.AddTask)
 

@@ -1,6 +1,10 @@
 package task
 
 import (
+	"errors"
+	"fmt"
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
@@ -34,6 +38,29 @@ func (svc *Service) GetTasks() ([]*Task, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	return result, err
+}
+
+func (svc *Service) GetTaskById() (Task, error) {
+	id := svc.Ctx.Params("id")
+
+	idInt, _ := strconv.Atoi(id)
+
+	if idInt == 0 {
+		return Task{}, errors.New(_TASK_NOT_FOUND_)
+	}
+
+	fmt.Println("print id: ", idInt)
+	repo := repository{
+		DB:    svc.DB,
+		Model: Task{ID: uint(idInt)},
+	}
+
+	result, err := repo.GetTaskById()
+	if result.ID == 0 {
+		err = errors.New(_TASK_NOT_FOUND_)
 	}
 
 	return result, err
