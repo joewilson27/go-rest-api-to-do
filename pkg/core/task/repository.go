@@ -40,3 +40,10 @@ func (repo *repository) Delete(id uint) error {
 	result := repo.DB.Where("id = ?", id).Delete(&task)
 	return result.Error
 }
+
+func (repo *repository) Update(data Task) error {
+
+	result := repo.DB.Where("id = ?", repo.Model).Updates(data)
+
+	return result.Error
+}

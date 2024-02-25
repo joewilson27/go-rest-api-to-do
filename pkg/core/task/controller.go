@@ -86,7 +86,6 @@ func GetTaskById(c *fiber.Ctx) error {
 }
 
 func DeleteTask(c *fiber.Ctx) error {
-	fmt.Println("here")
 	idp := c.Params("id")
 	id, _ := strconv.Atoi(idp)
 
@@ -110,5 +109,42 @@ func DeleteTask(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(model.AppResponse{
 		Meta: model.Meta{Message: response.SuccessDeleted},
+	})
+}
+
+func UpdateTask(c *fiber.Ctx) error {
+	var dataInput TaskAdd
+	idp := c.Params("id")
+	id, _ := strconv.Atoi(idp)
+
+	if idp == "" {
+		dataReturnError := model.AppResponse{
+			Meta: model.Meta{Message: response.FailedToUpdate},
+		}
+		return c.Status(fiber.StatusBadRequest).JSON(dataReturnError)
+	}
+
+	if err := c.BodyParser(&dataInput); err != nil {
+		dataReturnError := model.AppResponse{
+			Meta: model.Meta{Message: response.ErrorInput + " " + err.Error()},
+		}
+		return c.Status(fiber.StatusBadRequest).JSON(dataReturnError)
+	}
+
+	svc := Service{
+		DB:  db.PG,
+		Ctx: c,
+	}
+	fmt.Println("dataa ", dataInput)
+	if err := svc.UpdateByID(uint(id), dataInput); err != nil {
+		dataReturnError := model.AppResponse{
+			Meta: model.Meta{Message: response.FailedToUpdate + " " + err.Error()},
+		}
+		return c.Status(fiber.StatusBadRequest).JSON(dataReturnError)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(model.AppResponse{
+		Data: dataInput,
+		Meta: model.Meta{Message: response.SuccessUpdate},
 	})
 }

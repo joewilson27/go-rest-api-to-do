@@ -73,3 +73,19 @@ func (svc *Service) DeleteByID(id uint) error {
 
 	return err
 }
+
+func (svc *Service) UpdateByID(id uint, dataInput TaskAdd) error {
+	repo := repository{
+		DB:    svc.DB,
+		Model: id,
+	}
+
+	updateData := Task{
+		Name:   dataInput.Name,
+		Status: dataInput.Status,
+	}
+
+	err := repo.Update(updateData)
+
+	return err
+}
