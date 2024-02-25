@@ -2,7 +2,6 @@ package task
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -52,7 +51,6 @@ func (svc *Service) GetTaskById() (Task, error) {
 		return Task{}, errors.New(_TASK_NOT_FOUND_)
 	}
 
-	fmt.Println("print id: ", idInt)
 	repo := repository{
 		DB:    svc.DB,
 		Model: Task{ID: uint(idInt)},
