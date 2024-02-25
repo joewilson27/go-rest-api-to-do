@@ -1,6 +1,9 @@
 package task
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/joewilson27/common/model"
 	"github.com/joewilson27/common/response"
@@ -79,5 +82,33 @@ func GetTaskById(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(model.AppResponse{
 		Data: result,
 		Meta: model.Meta{Message: response.StatusSuccess},
+	})
+}
+
+func DeleteTask(c *fiber.Ctx) error {
+	fmt.Println("here")
+	idp := c.Params("id")
+	id, _ := strconv.Atoi(idp)
+
+	svc := Service{
+		DB: db.PG,
+	}
+	fmt.Println(idp)
+	if idp == "" {
+		dataReturnError := model.AppResponse{
+			Meta: model.Meta{Message: response.FailToDelete},
+		}
+		return c.Status(fiber.StatusBadRequest).JSON(dataReturnError)
+	}
+
+	if err := svc.DeleteByID(uint(id)); err != nil {
+		dataReturnError := model.AppResponse{
+			Meta: model.Meta{Message: response.FailToDelete + " " + err.Error()},
+		}
+		return c.Status(fiber.StatusBadRequest).JSON(dataReturnError)
+	}
+
+	return c.Status(fiber.StatusOK).JSON(model.AppResponse{
+		Meta: model.Meta{Message: response.SuccessDeleted},
 	})
 }

@@ -33,3 +33,10 @@ func (repo *repository) GetTaskById() (Task, error) {
 
 	return task, result.Error
 }
+
+func (repo *repository) Delete(id uint) error {
+	var task Task
+	//result := repo.DB.Delete(&Task{ID: id})
+	result := repo.DB.Where("id = ?", id).Delete(&task)
+	return result.Error
+}

@@ -63,3 +63,13 @@ func (svc *Service) GetTaskById() (Task, error) {
 
 	return result, err
 }
+
+func (svc *Service) DeleteByID(id uint) error {
+	repo := repository{
+		DB: svc.DB,
+	}
+
+	err := repo.Delete(id)
+
+	return err
+}
