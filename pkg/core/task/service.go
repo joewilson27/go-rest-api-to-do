@@ -42,6 +42,32 @@ func (svc *Service) GetTasks() ([]*Task, error) {
 	return result, err
 }
 
+func (svc *Service) GetTasksPaginate(limit, offset int, search string) ([]*Task, error) {
+
+	repo := repository{
+		DB: svc.DB,
+	}
+
+	result, err := repo.GetTasksPaginate(limit, offset, search)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, err
+}
+
+func (svc *Service) GetTotalData(search string) (int64, error) {
+
+	repo := repository{
+		DB: svc.DB,
+	}
+
+	count, err := repo.GetTotalData(search)
+
+	return count, err
+}
+
 func (svc *Service) GetTaskById() (Task, error) {
 	id := svc.Ctx.Params("id")
 

@@ -2,6 +2,7 @@ package task
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -58,6 +59,50 @@ func GetTasks(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(model.AppResponse{
 		Data: result,
+		Meta: model.Meta{Message: response.GetDataSuccessfully},
+	})
+}
+
+func GetTasksPaginate(c *fiber.Ctx) error {
+
+	svc := Service{
+		DB:  db.PG,
+		Ctx: c,
+	}
+
+	// Parse query parameters for pagination and search
+	page, _ := strconv.Atoi(c.Query("page", "1"))
+	size, _ := strconv.Atoi(c.Query("size", "5"))
+	offset := (page - 1) * size
+	search := c.Query("search", "")
+
+	// get data
+	result, err := svc.GetTasksPaginate(size, offset, search)
+	if err != nil {
+		dataReturnError := model.AppResponse{
+			Data: nil,
+			Meta: model.Meta{Message: response.GetDataFailed + " : " + err.Error()},
+		}
+		return c.Status(fiber.StatusBadRequest).JSON(dataReturnError)
+	}
+
+	// get total data
+	totalData, _ := svc.GetTotalData(search)
+
+	// calculate total pages
+	totalPages := int(math.Ceil(float64(totalData) / float64(size)))
+
+	// Create the response
+	responseData := PaginateResponse{
+		TotalData:   totalData,
+		TotalPage:   totalPages,
+		PageSize:    size,
+		CurrentPage: page,
+		Data:        result,
+	}
+
+	return c.Status(fiber.StatusOK).JSON(model.AppResponse{
+		Data: responseData,
 		Meta: model.Meta{Message: response.GetDataSuccessfully},
 	})
 }
@@ -147,4 +192,45 @@ func UpdateTask(c *fiber.Ctx) error {
 		Data: dataInput,
 		Meta: model.Meta{Message: response.SuccessUpdate},
 	})
+}
+
+func SamplePaginate(c *fiber.Ctx) error {
+	// Simulated data
+	data := []string{"item1", "item2", "item3", "item4", "item5", "item6", "item7", "item8", "item9", "item10"}
+
+	// Get query parameters for pagination
+	page := c.Query("page", "1")
+	size := c.Query("size", "5")
+
+	// Convert query parameters to integers
+	pageNum, _ := strconv.Atoi(page)
+	pageSize, _ := strconv.Atoi(size)
+
+	fmt.Println(data)
+
+	// Calculate total pages
+	totalPages := int(math.Ceil(float64(len(data)) / float64(pageSize)))
+
+	fmt.Println("totalPages: ", totalPages)
+
+	// Extract data for current page
+	start := (pageNum - 1) * pageSize
+	end := start + pageSize
+	if end > len(data) {
+		end = len(data)
+	}
+	fmt.Println("start: ", start)
+	fmt.Println("end: ", end)
+	currentPageData := data[start:end]
+
+	// Create the response
+	response := DataResponse{
+		TotalPage:   totalPages,
+		PageSize:    pageSize,
+		CurrentPage: pageNum,
+		Data:        currentPageData,
+	}
+
+	// Return the response as JSON
+	return c.JSON(response)
 }

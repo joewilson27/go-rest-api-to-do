@@ -26,6 +26,37 @@ func (repo *repository) GetTasks() ([]*Task, error) {
 	return tasks, nil
 }
 
+func (repo *repository) GetTasksPaginate(limit, offset int, search string) ([]*Task, error) {
+	tasks := []*Task{}
+
+	query := repo.DB
+	if search != "" {
+		query = query.Where("name LIKE ?", "%"+search+"%")
+	}
+
+	err := query.Limit(limit).Offset(offset).Find(&tasks)
+
+	if err.Error != nil {
+		return nil, err.Error
+	}
+
+	return tasks, nil
+}
+
+func (repo *repository) GetTotalData(search string) (int64, error) {
+	var tasks []Task
+	var count int64
+
+	query := repo.DB
+	if search != "" {
+		query = query.Where("name LIKE ?", "%"+search+"%")
+	}
+	err := query.Find(&tasks).Count(&count).Error
+
+	return count, err
+
+}
+
 func (repo *repository) GetTaskById() (Task, error) {
 	var task Task
 

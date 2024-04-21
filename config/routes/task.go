@@ -9,6 +9,8 @@ func Task(taskRoutes fiber.Router) {
 
 	taskRoutes.Get("/", task.GetTasks)
 
+	taskRoutes.Get("/paginate", task.GetTasksPaginate)
+
 	taskRoutes.Get("/item/:id", task.GetTaskById)
 
 	taskRoutes.Post("/", task.AddTask)
@@ -16,5 +18,7 @@ func Task(taskRoutes fiber.Router) {
 	taskRoutes.Delete("/:id", task.DeleteTask)
 
 	taskRoutes.Patch("/:id", task.UpdateTask)
+
+	taskRoutes.Get("/sample-paginate", task.SamplePaginate)
 
 }
